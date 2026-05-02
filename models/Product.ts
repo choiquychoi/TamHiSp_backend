@@ -1,4 +1,4 @@
-﻿import mongoose, { Document, Schema, Model } from "mongoose";
+import mongoose, { Document, Schema, Model } from "mongoose";
 
 export interface IVariant {
   size?: string;
@@ -11,15 +11,16 @@ export interface IProduct extends Document {
   description: string;
   price: number;
   salePrice?: number;
-  category: "Cầu lông" | "Pickleball" | "Tennis" | "Giày Thể Thao" | "Phụ Kiện";
+  category: "Cầu lông" | "Pickleball" | "Quần áo" | "Giày Thể Thao" | "Phụ Kiện";
   brand: string;
   sku: string;
   status: "Còn hàng" | "Hết hàng" | "Ngừng kinh doanh";
   specifications: {
     badminton?: any;
     pickleball?: any;
-    tennis?: any;
+    clothes?: any;
     shoes?: any;
+    others?: string;
   };
   mainImage: string;
   gallery: string[];
@@ -39,15 +40,16 @@ const productSchema: Schema<IProduct> = new Schema(
     description: { type: String, required: true, trim: true },
     price: { type: Number, required: true, min: 0 },
     salePrice: { type: Number, min: 0 },
-    category: { type: String, enum: ["Cầu lông", "Pickleball", "Tennis", "Giày Thể Thao", "Phụ Kiện"], required: true },
+    category: { type: String, enum: ["Cầu lông", "Pickleball", "Quần áo", "Giày Thể Thao", "Phụ Kiện"], required: true },
     brand: { type: String, required: true, trim: true },
     sku: { type: String, trim: true, unique: true },
     status: { type: String, default: "Còn hàng" },
     specifications: {
       badminton: Schema.Types.Mixed,
       pickleball: Schema.Types.Mixed,
-      tennis: Schema.Types.Mixed,
-      shoes: Schema.Types.Mixed
+      clothes: Schema.Types.Mixed,
+      shoes: Schema.Types.Mixed,
+      others: Schema.Types.Mixed
     },
     mainImage: { type: String, required: true },
     gallery: [String],

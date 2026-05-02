@@ -1,4 +1,4 @@
-﻿import express, { Request, Response } from "express";
+import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import jwt from "jsonwebtoken";
@@ -184,7 +184,7 @@ app.post("/api/admin/login", async (req: Request, res: Response) => {
   try {
     const admin = await Admin.findOne({ username });
     if (!admin || !(await admin.comparePassword(password))) return res.status(401).json({ message: "Sai thông tin." });
-    const secret = process.env.JWT_SECRET || "nguyen_binh_sports_secret_2024_fixed";
+    const secret = process.env.JWT_SECRET || "tam_hi_sports_secret_2026_secure";
     const token = jwt.sign({ id: admin._id }, secret, { expiresIn: "1d" });
     res.json({ _id: admin._id, username: admin.username, token });
   } catch (error: any) { res.status(500).json({ message: error.message }); }
@@ -192,18 +192,26 @@ app.post("/api/admin/login", async (req: Request, res: Response) => {
 
 app.get("/api/contact", async (req: Request, res: Response) => {
   try { 
-    res.json(await Contact.findOne() || await Contact.create({ 
-      companyName: "NGUYÊN BÍNH SPORTS",
-      address: "Số 02 Nguyễn Thế Truyện, P. Tân Sơn Nhì, Q. Tân Phú, TP. HCM",
-      phone: "090 251 39 39",
-      email: "vanphongnguyenbinh@gmail.com",
-      socialLinks: {
-        facebook: "https://www.facebook.com/messages/t/1431186217018284",
-        zalo: "0902513939"
-      }
-    })); 
-  }
-  catch (error: any) { res.status(500).json({ message: error.message }); }
+    let contact = await Contact.findOne();
+    if (!contact) {
+      contact = await Contact.create({ 
+        companyName: "TÂM HÍ SPORTS",
+        address: "Số 02 Nguyễn Thế Truyện, P. Tân Sơn Nhì, Q. Tân Phú, TP. HCM",
+        phone: "090 251 39 39",
+        email: "tamhisports@gmail.com",
+        socialLinks: {
+          facebook: "https://www.facebook.com/tamhisports",
+          zalo: "0902513939"
+        }
+      });
+    } else if (contact.companyName.includes("NGUYÊN BÍNH")) {
+      contact.companyName = "TÂM HÍ SPORTS";
+      contact.email = "tamhisports@gmail.com";
+      contact.socialLinks.facebook = "https://www.facebook.com/tamhisports";
+      await contact.save();
+    }
+    res.json(contact); 
+  } catch (error: any) { res.status(500).json({ message: error.message }); }
 });
 
 app.put("/api/admin/contact", protect, async (req: Request, res: Response) => {
