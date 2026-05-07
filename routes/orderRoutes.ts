@@ -21,31 +21,21 @@ router.post('/', async (req: Request, res: Response) => {
         return res.status(404).json({ message: `Sản phẩm ${item.name} không tồn tại` });
       }
 
-      // Nếu có thông tin biến thể cụ thể (Cần xử lý logic này kỹ hơn ở Frontend)
-      // Tạm thời trừ vào tổng kho và tìm biến thể tương ứng
+      // Nếu có thông tin biến thể cụ thể
       if (product.variants && product.variants.length > 0 && item.variantLabel) {
         const variant = product.variants.find((v: any) => 
           `${v.size || ''}${v.color ? ' - ' + v.color : ''}` === item.variantLabel
         );
         if (variant) {
-          if (variant.stock < item.quantity) {
-             return res.status(400).json({ message: `Sản phẩm ${item.name} (${item.variantLabel}) không đủ hàng` });
-          }
+          // Cho phép đặt hàng ngay cả khi hết kho (stock có thể xuống âm)
           variant.stock -= item.quantity;
-        } else {
-          // Nếu không tìm thấy biến thể cụ thể, trừ vào totalStock (hoặc báo lỗi tùy logic)
-          if (product.totalStock < item.quantity) {
-             return res.status(400).json({ message: `Sản phẩm ${item.name} không đủ hàng` });
-          }
         }
       } else {
-        // Không có biến thể, trừ trực tiếp
-        if (product.totalStock < item.quantity) {
-          return res.status(400).json({ message: `Sản phẩm ${item.name} không đủ hàng` });
-        }
+        // Không có biến thể, trừ trực tiếp vào tổng kho
+        product.totalStock -= item.quantity;
       }
       
-      // Giảm số lượng bán được và trừ tổng kho
+      // Giảm số lượng bán được
       product.soldCount += item.quantity;
       // Hook pre('validate') trong Product.ts sẽ tự tính lại totalStock từ variants
       await product.save();

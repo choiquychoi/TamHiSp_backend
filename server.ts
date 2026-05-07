@@ -9,6 +9,7 @@ import Admin from "./models/Admin.js";
 import Contact from "./models/Contact.js";
 import newsRoutes from "./routes/newsRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import bannerRoutes from "./routes/bannerRoutes.js";
 import Order from "./models/Order.js";
 import News from "./models/News.js";
 import { protect } from "./middleware/authMiddleware.js";
@@ -178,6 +179,7 @@ app.delete("/api/admin/products/:id", protect, async (req: Request, res: Respons
 app.use("/api/admin", newsRoutes);
 app.use("/api", newsRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/banners", bannerRoutes);
 
 app.post("/api/admin/login", async (req: Request, res: Response) => {
   const { username, password } = req.body;
