@@ -14,7 +14,6 @@ const BannerSchema: Schema = new Schema({
   image: { type: String, required: true },
   title: { type: String, required: true },
   subtitle: { type: String },
-  buttonText: { type: String, default: 'MUA NGAY' },
   link: { type: String, default: '/' },
   order: { type: Number, default: 0 },
   isActive: { type: Boolean, default: true }
