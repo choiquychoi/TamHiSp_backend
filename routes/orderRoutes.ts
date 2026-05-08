@@ -21,23 +21,9 @@ router.post('/', async (req: Request, res: Response) => {
         return res.status(404).json({ message: `Sản phẩm ${item.name} không tồn tại` });
       }
 
-      // Nếu có thông tin biến thể cụ thể
-      if (product.variants && product.variants.length > 0 && item.variantLabel) {
-        const variant = product.variants.find((v: any) => 
-          `${v.size || ''}${v.color ? ' - ' + v.color : ''}` === item.variantLabel
-        );
-        if (variant) {
-          // Cho phép đặt hàng ngay cả khi hết kho (stock có thể xuống âm)
-          variant.stock -= item.quantity;
-        }
-      } else {
-        // Không có biến thể, trừ trực tiếp vào tổng kho
-        product.totalStock -= item.quantity;
-      }
-      
       // Giảm số lượng bán được
       product.soldCount += item.quantity;
-      // Hook pre('validate') trong Product.ts sẽ tự tính lại totalStock từ variants
+      // Không tự động trừ kho theo yêu cầu của user
       await product.save();
     }
 

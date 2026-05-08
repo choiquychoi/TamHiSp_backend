@@ -92,9 +92,6 @@ app.get("/api/admin/stats", protect, async (req: Request, res: Response) => {
       sold: p.soldCount || 0
     }));
 
-    // 5. Sản phẩm sắp hết hàng (tồn kho < 10)
-    const lowStockProducts = await Product.find({ totalStock: { $lt: 10 } }).limit(5).select("name totalStock");
-
     res.json({
       totalRevenue,
       totalOrders,
@@ -103,7 +100,6 @@ app.get("/api/admin/stats", protect, async (req: Request, res: Response) => {
       monthlyRevenue,
       statusStats,
       topSellingData,
-      lowStockProducts: lowStockProducts.map(p => ({ name: p.name, stock: p.totalStock })),
       recentOrders: await Order.find().sort({ createdAt: -1 }).limit(5)
     });
   } catch (error: any) { res.status(500).json({ message: error.message }); }

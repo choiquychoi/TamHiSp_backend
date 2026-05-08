@@ -76,10 +76,10 @@ productSchema.pre<IProduct>("validate", async function() {
     this.slug = this.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[đĐ]/g, "d").replace(/([^0-9a-z-\s])/g, "").replace(/(\s+)/g, "-").replace(/-+/g, "-").replace(/^-+|-+$/g, "");
   }
   
-  // Tự động tính tổng tồn kho từ các biến thể
+  // Tự động tính tổng tồn kho từ các biến thể để tham khảo
   if (this.variants && this.variants.length > 0) {
     this.totalStock = this.variants.reduce((total, v) => total + v.stock, 0);
-    this.status = this.totalStock > 0 ? "Còn hàng" : "Hết hàng";
+    // Không tự động set status Hết hàng để chủ quán tự quản lý hiển thị
   }
 
   if (!this.sku && this.brand && this.category) {
