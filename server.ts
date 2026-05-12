@@ -117,9 +117,23 @@ app.get("/api/products", async (req: Request, res: Response) => {
   
   let sortOption: any = { createdAt: -1 }; // Mặc định mới nhất
 
+  if (req.query.sort) {
+    const sort = req.query.sort as string;
+    if (sort === 'oldest') sortOption = { createdAt: 1 };
+    else if (sort === 'price-asc') sortOption = { price: 1 };
+    else if (sort === 'price-desc') sortOption = { price: -1 };
+    else if (sort === 'newest') sortOption = { createdAt: -1 };
+  }
+
   if (req.query.isFeatured === "true") {
     query.isFeatured = true;
     sortOption = { featuredAt: -1 }; 
+  }
+
+  if (req.query.minPrice || req.query.maxPrice) {
+    query.price = {};
+    if (req.query.minPrice) query.price.$gte = Number(req.query.minPrice);
+    if (req.query.maxPrice) query.price.$lte = Number(req.query.maxPrice);
   }
 
   if (req.query.keyword) {
